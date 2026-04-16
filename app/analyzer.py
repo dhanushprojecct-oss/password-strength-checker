@@ -9,7 +9,7 @@ def load_file(filename, fallback):
         return fallback
 
 # Load common passwords at module level
-COMMON_PASSWORDS = load_file("common_passwords.txt", ["password", "123456", "qwerty", "admin"])
+COMMON_PASSWORDS = load_file("data/common_passwords.txt", ["password", "123456", "qwerty", "admin"])
 
 def has_sequential_pattern(password):
     sequences = ["123", "abc", "qwerty"]

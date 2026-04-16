@@ -8,7 +8,7 @@ def load_wordlist(filepath):
         return ["password", "123456", "qwerty"]
 
 class Attacker:
-    def __init__(self, wordlist_file="wordlist.txt"):
+    def __init__(self, wordlist_file="data/wordlist.txt"):
         self.wordlist = load_wordlist(wordlist_file)
 
     def simulate_dictionary_attack(self, password):
@@ -50,7 +50,7 @@ class Attacker:
             return f"{round(years)} years"
 
     def estimate_brute_force(self, password):
-        from analyzer import calculate_entropy
+        from app.analyzer import calculate_entropy
         import math
         
         # Determine pool size

@@ -1,9 +1,11 @@
+import os
+print("FILE:", os.path.abspath(__file__))
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 import os
-from analyzer import analyze_password
-from attacker import Attacker
+from app.analyzer import analyze_password
+from app.attacker import Attacker
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_key_change_in_production'
