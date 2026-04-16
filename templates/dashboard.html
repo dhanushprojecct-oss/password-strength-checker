@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card card-wide">
+    <h2>Threat Analysis Dashboard</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem;">Analyze target phrase strength and vulnerabilities.</p>
+    
+    <form method="POST" action="{{ url_for('dashboard') }}" autocomplete="off">
+        <div class="form-group">
+            <input type="text" name="password" placeholder="Enter target string..." required 
+                   value="{{ request.form.get('password', '') }}"
+                   style="font-family: monospace; font-size: 1.1rem; padding: 1rem;">
+        </div>
+        <button type="submit" class="btn">Execute Analysis</button>
+    </form>
+    
+    {% if result %}
+    <div class="analysis-results">
+        <h3>Intelligence Report</h3>
+        
+        <!-- Strength Bar -->
+        {% set score_percent = (result.basic.score / 10) * 100 %}
+        {% set bar_color = 'var(--danger)' %}
+        {% if result.basic.score > 7 %}
+            {% set bar_color = 'var(--success)' %}
+        {% elif result.basic.score > 4 %}
+            {% set bar_color = 'var(--warning)' %}
+        {% endif %}
+        
+        <div class="strength-bar-container">
+            <div class="strength-bar" style="width: {{ score_percent }}%; background-color: {{ bar_color }};"></div>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Security Categorization</div>
+                <div class="stat-value" style="color: {{ bar_color }};">{{ result.basic.strength }}</div>
+                <div class="stat-label">Score: {{ result.basic.score }}/10</div>
+            </div>
+            
+            <div class="stat-box">
+                <div class="stat-label">Shannon Entropy</div>
+                <div class="stat-value">{{ result.basic.entropy }}</div>
+                <div class="stat-label">Bits</div>
+            </div>
+            
+            <div class="stat-box">
+                <div class="stat-label">Est. Crack Time</div>
+                {% set risk_color = 'var(--danger)' %}
+                {% if result.brute_force.risk_level == 'Low' %}
+                    {% set risk_color = 'var(--success)' %}
+                {% elif result.brute_force.risk_level == 'Medium' %}
+                    {% set risk_color = 'var(--warning)' %}
+                {% endif %}
+                <div class="stat-value" style="font-size: 1.25rem; color: {{ risk_color }};">
+                    {{ result.brute_force.crack_time }}
+                </div>
+                <div class="stat-label">Risk Level: {{ result.brute_force.risk_level }}</div>
+            </div>
+            
+            <div class="stat-box">
+                <div class="stat-label">Dictionary Attack</div>
+                {% if result.dictionary.success %}
+                    <div class="stat-value text-danger">MATCHED</div>
+                    <div class="stat-label">Found in {{ result.dictionary.time_taken_ms }}ms</div>
+                {% else %}
+                    <div class="stat-value text-success">CLEAN</div>
+                    <div class="stat-label">No matches found</div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if result.basic.feedback %}
+            <div class="suggestions-list">
+                <h4>⚠️ Security Vulnerabilities Detected</h4>
+                <ul>
+                    {% for item in result.basic.feedback %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
